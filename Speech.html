@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript">
+        /*
+              SpeechVoice.Volume = <vol>
+              SpeechVoice.Speak(Text, Flags)
+                where Flags is
+                   SPF_DEFAULT = 0
+                   SPF_ASYNC = 1
+                   SPF_PURGEBEFORESPEAK = 2
+                   SPF_IS_FILENAME = 3
+                   SPF_IS_XML = 4
+                   SPF_IS_NOT_XML = 5
+                   SPF_PERSIST_XML = 6
+
+               SpeechVoice.Rate = <rate>
+               SpeechVoice.Pause()
+               SpeechVoice.Resume()
+               SpeechVoice.SpeakCompleteEvent()
+               SpeechVoice.Skip(Type, NumItems)
+        */
+
+        var SpeechVoice = null;
+        var IsCompleteSpeeching = true;
+        Init = function ()
+        {
+            try
+            {
+                SpeechVoice = new ActiveXObject("sapi.spvoice");
+                RateInput.value = SpeechVoice.Rate;
+                VolumeInput.value = SpeechVoice.Volume;
+            } catch (e)
+            {
+                SpeechVoice = null;
+            }
+        }
+
+        ButtonPlayClick = function ()
+        {
+            if (SpeechVoice)
+            {
+                if (SpeechVoice.Status.InputSentencePosition == 0)
+                {
+                    SpeechVoice.Speak(TextArea1.value, 1);
+                    IsCompleteSpeeching = false;
+                }
+                else
+                    SpeechVoice.Resume();
+            }
+        }
+
+        ButtonPauseClick = function ()
+        {
+            if (SpeechVoice && (SpeechVoice.Status.InputSentencePosition != 0))
+            {
+                SpeechVoice.Pause();
+            }
+        }
+
+        OnRateInput = function ()
+        {
+            if (SpeechVoice)
+            {
+                SpeechVoice.Rate = parseInt(RateInput.value, 10);
+            }
+        }
+
+        OnVolumeInput = function ()
+        {
+            if (SpeechVoice)
+            {
+                SpeechVoice.Volume = parseInt(VolumeInput.value, 10);
+            }
+        }
+
+    </script>
+</head>
+<body onload="Init();" style="top: 0px; right: 0px; bottom: 0px; left: 0px">
+    <textarea id="TextArea1" name="S1" style="top:0px; left:0px; width:100%;height:90%;position:absolute" spellcheck="False"></textarea>
+    <div style="bottom: 0px; left: 0px; width:100%; height:6%; position:absolute">
+        <input id="Button1" onclick="ButtonPlayClick();" type="button" value="Play" style="height:100%;"  />
+        <input id="Button2" onclick="ButtonPauseClick();" type="button" value="Pause" style="height:100%;"/>
+        Rate<input id="RateInput" type="text" oninput="OnRateInput();" />
+        Volume<input id="VolumeInput" type="text" oninput="OnVolumeInput();" />
+    </div>
+</body>
+</html>
